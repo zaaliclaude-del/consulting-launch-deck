@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>Запусти свой консалтинг за 8 недель</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1116; --bg2:#151B24; --panel:#1A2230;
+  --ink:#EEF1F5; --muted:#9AA4B2; --faint:#3A4453; --faint2:#2A3340;
+  --line:#232C38; --accent:#F5A623; --accent-deep:#C9810F; --accent-ink:#1B1304;
+  --slideW:1280px; --slideH:720px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#05070A;font-family:'Inter',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh}
+
+.deck{width:var(--slideW);height:var(--slideH);overflow-x:auto;overflow-y:hidden;display:flex;
+  scroll-snap-type:x mandatory;scroll-behavior:smooth;box-shadow:0 30px 120px rgba(0,0,0,.7);border-radius:14px}
+.deck::-webkit-scrollbar{display:none}
+.slide{position:relative;flex:0 0 var(--slideW);width:var(--slideW);height:var(--slideH);
+  scroll-snap-align:start;background:var(--bg);padding:62px 84px;display:flex;flex-direction:column;overflow:hidden}
+.slide::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:4;
+  background:radial-gradient(1100px 520px at 86% 8%, rgba(245,166,35,.05), transparent 60%)}
+
+/* shared type */
+.kicker{font-size:13px;letter-spacing:2.4px;text-transform:uppercase;color:var(--accent);font-weight:700;opacity:.92;max-width:42ch}
+.kicker.mute{color:var(--muted);opacity:.8}
+h1.title{font-weight:900;line-height:1.02;letter-spacing:-1.2px;font-size:58px;margin-top:16px;max-width:16ch}
+h2.head{font-weight:800;line-height:1.05;letter-spacing:-.6px;font-size:42px;margin-top:14px;max-width:19ch}
+.sub{color:var(--muted);font-size:20px;font-weight:500;margin-top:14px;line-height:1.4;max-width:34ch}
+.hl{color:var(--accent)}
+.body{margin-top:auto;display:flex;flex-direction:column;gap:7px}
+.body p{font-size:18px;color:#C6CEDA;line-height:1.45;font-weight:500;max-width:44ch}
+.body p strong{color:var(--ink);font-weight:700}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;gap:42px;min-height:0;margin:8px 0}
+.num{position:absolute;top:30px;right:34px;font-size:12px;letter-spacing:2px;color:var(--faint);font-weight:700;z-index:6}
+.foot{position:absolute;left:84px;bottom:44px;font-size:12.5px;color:var(--faint);letter-spacing:.3px;z-index:6;max-width:60ch}
+
+/* photo-hero system (Kosslyn: text over darkened zone) */
+.slide.photo{padding:0}
+.photo .bg{position:absolute;inset:0;z-index:0;background:
+  radial-gradient(900px 620px at 72% 42%, rgba(245,166,35,.12), transparent 60%),
+  linear-gradient(125deg,#0c1016 0%,#06080c 70%)}
+.photo .bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.photo .veil{position:absolute;inset:0;z-index:1}
+.veil.left{background:linear-gradient(90deg, rgba(5,7,10,.95) 0%, rgba(5,7,10,.88) 24%, rgba(5,7,10,.55) 52%, rgba(5,7,10,.12) 78%, transparent 100%)}
+.veil.bottom{background:linear-gradient(0deg, rgba(5,7,10,.96) 0%, rgba(5,7,10,.74) 24%, rgba(5,7,10,.16) 52%, transparent 72%)}
+.veil.full{background:radial-gradient(1300px 760px at 50% 64%, rgba(5,7,10,.5), rgba(5,7,10,.92))}
+.photo .content{position:relative;z-index:3;padding:62px 84px;height:100%;width:100%;display:flex;flex-direction:column}
+.photo .num,.photo .foot{text-shadow:0 1px 8px rgba(0,0,0,.8)}
+
+/* layout split */
+.split{display:flex;gap:56px;flex:1;min-height:0}
+.split .lcol{flex:0 0 44%;display:flex;flex-direction:column}
+.split .rcol{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.lcol .body{margin-top:24px}
+
+/* ---- bars (data) ---- */
+.bars{display:flex;align-items:flex-end;gap:34px}
+.bar{width:96px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.bar .col{width:100%;background:var(--faint);border-radius:7px 7px 0 0;position:relative;transition:.3s}
+.bar.am .col{background:linear-gradient(180deg,var(--accent),var(--accent-deep));box-shadow:0 0 34px rgba(245,166,35,.34)}
+.bar .val{font-size:15px;font-weight:800;color:#C6CEDA;margin-bottom:9px}
+.bar.am .val{color:var(--accent)}
+.bar .cap{font-size:13.5px;color:var(--muted);margin-top:12px;font-weight:600;text-align:center;line-height:1.2}
+.baseline{height:2px;background:#3a4453;border-radius:2px}
+
+.hero-num{font-size:140px;font-weight:900;line-height:.9;letter-spacing:-4px;color:var(--accent);
+  text-shadow:0 0 60px rgba(245,166,35,.3)}
+.hero-num.neutral{color:#EEF1F5;text-shadow:none}
+.hero-num small{display:block;font-size:17px;color:var(--muted);font-weight:600;letter-spacing:0;margin-top:14px;max-width:18ch}
+.tag{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.6px;
+  color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:6px 14px}
+
+/* ---- value-equation fraction ---- */
+.fraction{display:flex;flex-direction:column;align-items:center;gap:0}
+.frow{display:flex;align-items:center;gap:20px;padding:16px 8px}
+.fcell{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 26px;
+  font-size:23px;font-weight:800;text-align:center;min-width:240px}
+.fcell .ar{display:block;font-size:13px;font-weight:700;letter-spacing:.5px;margin-top:8px}
+.up .ar{color:var(--accent)} .dn .ar{color:var(--muted)}
+.ftimes{font-size:28px;color:var(--faint);font-weight:800}
+.fbar{width:580px;height:5px;background:linear-gradient(90deg,var(--accent),var(--accent-deep));
+  border-radius:3px;box-shadow:0 0 26px rgba(245,166,35,.4);margin:6px 0}
+
+/* ---- compare cards ---- */
+.cmp{display:flex;align-items:stretch;gap:24px;width:100%;max-width:900px}
+.cmp .arrow{display:flex;align-items:center;color:var(--faint);font-size:32px;font-weight:300}
+.ccard{flex:1;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:28px 26px;display:flex;flex-direction:column;gap:10px}
+.ccard .lab{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.ccard .big{font-size:22px;font-weight:800;line-height:1.22}
+.ccard .small{font-size:14.5px;color:var(--muted);line-height:1.42}
+.ccard.am{background:linear-gradient(180deg,rgba(245,166,35,.13),rgba(245,166,35,.04));border-color:rgba(245,166,35,.5)}
+.ccard.am .lab{color:var(--accent)} .ccard.am .big{color:#FFD58A}
+.ccard.float{background:rgba(13,17,23,.82);backdrop-filter:blur(3px)}
+.ccard.am.float{background:linear-gradient(180deg,rgba(245,166,35,.18),rgba(20,15,5,.78));backdrop-filter:blur(3px)}
+
+/* pair rows */
+.pairs{display:flex;flex-direction:column;gap:13px;width:100%;max-width:860px}
+.pair{display:flex;gap:16px;align-items:center}
+.pair .claim{flex:0 0 33%;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:15px 18px;color:var(--muted);font-size:16px;font-weight:600}
+.pair .ar{color:var(--faint);font-size:20px}
+.pair .proof{flex:1;background:linear-gradient(180deg,rgba(245,166,35,.12),rgba(245,166,35,.03));
+  border:1px solid rgba(245,166,35,.42);border-radius:12px;padding:15px 18px;color:#FFD58A;font-size:16px;font-weight:700}
+.pair .proof.dim{background:var(--bg2);border:1px solid var(--line);color:#C6CEDA;font-weight:600}
+
+/* 3-cell reason grid */
+.reasons{display:flex;gap:22px;width:100%;max-width:980px}
+.rcard{flex:1;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;gap:12px}
+.rcard .rn{font-size:13px;font-weight:800;letter-spacing:1px;color:var(--faint);text-transform:uppercase}
+.rcard .rt{font-size:21px;font-weight:800;line-height:1.18;color:var(--ink)}
+.rcard .rd{font-size:14.5px;color:var(--muted);line-height:1.45}
+.rcard.am{border-color:rgba(245,166,35,.4)}
+.rcard.am .rt{color:#FFD58A}
+
+/* who/who-not grid */
+.qual{display:flex;gap:26px;width:100%;max-width:900px}
+.qcol{flex:1;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:24px 26px}
+.qcol h4{font-size:13px;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:16px}
+.qcol.yes h4{color:var(--accent)} .qcol.no h4{color:var(--muted)}
+.qcol.yes{border-color:rgba(245,166,35,.4)}
+.qrow{display:flex;gap:11px;padding:11px 0;border-top:1px solid var(--faint2);font-size:16px;font-weight:600;line-height:1.3}
+.qrow:first-of-type{border-top:none}
+.qmark{flex:none;font-weight:800;color:var(--accent)}
+.qcol.no .qmark{color:var(--faint)} .qcol.no .qrow{color:var(--muted)}
+
+/* flow diagram (method) */
+.flow{display:flex;align-items:center;gap:0;width:100%;max-width:1000px;justify-content:center}
+.fstep{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;width:240px}
+.fdisc{width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:900;background:var(--bg2);border:1px solid var(--line);color:var(--muted)}
+.fstep.am .fdisc{background:linear-gradient(180deg,var(--accent),var(--accent-deep));color:var(--accent-ink);border:none;box-shadow:0 0 36px rgba(245,166,35,.34)}
+.fstep .ft{font-size:24px;font-weight:800;color:var(--ink)}
+.fstep .fd{font-size:15px;color:var(--muted);line-height:1.38;max-width:22ch}
+.farrow{color:var(--faint);font-size:26px;font-weight:300;margin:0 -6px 38px;align-self:center}
+
+/* stack tower */
+.tower{display:flex;flex-direction:column;gap:7px;width:600px}
+.tname{text-align:center;font-size:21px;font-weight:900;color:#FFD58A;letter-spacing:.3px;margin-bottom:4px}
+.layer{background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;gap:18px;font-size:16px;font-weight:600}
+.layer span:first-child{flex:1}
+.layer .pt{font-size:14px;color:var(--muted);font-weight:700;min-width:84px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.layer.core{border-color:var(--faint)}
+.layer.core span:first-child{color:var(--ink);font-weight:700}
+.totval{background:linear-gradient(180deg,rgba(245,166,35,.16),rgba(245,166,35,.05));border:1px solid rgba(245,166,35,.55);
+  border-radius:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;color:#FFD58A;font-weight:800;font-size:18px;margin-top:6px}
+.totval .v{color:var(--accent-ink);background:var(--accent);padding:3px 12px;border-radius:7px;font-weight:900;font-variant-numeric:tabular-nums}
+.price{display:flex;justify-content:space-between;align-items:center;padding:6px 20px;color:var(--muted);font-size:16px;font-weight:600}
+.price .real{color:var(--ink);font-weight:800;font-size:19px;font-variant-numeric:tabular-nums}
+.price .save{color:var(--accent);font-weight:800;font-size:13px;border:1px solid rgba(245,166,35,.5);border-radius:6px;padding:2px 8px;margin-left:10px}
+
+/* big statement */
+.formula{font-size:40px;font-weight:900;line-height:1.22;text-align:center;max-width:20ch;letter-spacing:-.5px}
+.formula .x{color:var(--accent)}
+
+/* cta */
+.ctawrap{display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center}
+.ctapromise{font-size:24px;font-weight:700;color:#DCE3EC;max-width:26ch;line-height:1.34}
+.btn{background:linear-gradient(180deg,var(--accent),var(--accent-deep));color:var(--accent-ink);
+  font-weight:900;font-size:25px;letter-spacing:.3px;padding:22px 52px;border-radius:14px;border:none;
+  box-shadow:0 0 50px rgba(245,166,35,.4);cursor:pointer}
+.limiter{font-size:15px;color:var(--muted);font-weight:600}
+.limiter b{color:var(--ink)}
+
+/* method map slide */
+.mapgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 30px;width:100%;max-width:1080px;align-content:center}
+.maprow{display:flex;gap:12px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--faint2)}
+.maprow .mn{flex:none;width:26px;font-size:15px;font-weight:900;color:var(--accent);font-variant-numeric:tabular-nums}
+.maprow .mm{font-size:13.5px;color:#C6CEDA;line-height:1.32}
+.maprow .mm b{color:var(--ink);font-weight:700}
+
+/* methods overlay (M key) */
+.methods{position:absolute;left:0;right:0;bottom:0;background:rgba(8,11,16,.94);backdrop-filter:blur(6px);
+  border-top:1px solid var(--accent);padding:18px 84px 20px;transform:translateY(101%);transition:.28s;z-index:8}
+.show-methods .methods{transform:translateY(0)}
+.methods h5{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:9px;font-weight:800}
+.mlist{display:flex;flex-wrap:wrap;gap:7px}
+.mchip{font-size:12px;background:var(--bg2);border:1px solid var(--line);border-radius:7px;padding:5px 10px;color:#C6CEDA}
+.mchip b{color:var(--accent);font-weight:700}
+
+/* hud + hint */
+.hud{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;z-index:30}
+.dots{display:flex;gap:6px}
+.dots b{width:8px;height:8px;border-radius:50%;background:#2b3442;cursor:pointer;transition:.2s}
+.dots b.on{background:var(--accent);width:22px;border-radius:5px}
+.hint{position:fixed;top:16px;left:50%;transform:translateX(-50%);font-size:12px;color:#55607a;letter-spacing:.5px;z-index:30}
+.hint b{color:#8a93a2}
+</style>
+</head>
+<body>
+<div class="hint">свайп / ← → листать &nbsp;·&nbsp; точки внизу - перейти &nbsp;·&nbsp; <b>M</b> методы (на ПК)</div>
+<div class="deck" id="deck">
+
+  <!-- 1 TITLE photo -->
+  <section class="slide photo">
+    <div class="bg"><img src="img/s01.png" alt=""></div>
+    <div class="veil left"></div>
+    <div class="content">
+      <div class="num">01 / 16</div>
+      <div class="kicker">Для практикующих экспертов</div>
+      <h1 class="title">Запусти свой консалтинг за 8 недель и продавай <span class="hl">результат, а не часы</span></h1>
+      <div class="body">
+        <p><strong>Знания у тебя уже есть.</strong></p>
+        <p>Нет одного - системы, которая превращает их в то, что покупают.</p>
+      </div>
+      <div class="foot">срок - иллюстративный пример · система продаж экспертизы</div>
+    </div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Кейплз:</b> заголовок на личной выгоде + срок (8 недель)</span>
+      <span class="mchip"><b>Огилви:</b> несёт 80%, читается за секунду вне контекста</span>
+      <span class="mchip"><b>Шугарман:</b> аксиома первого предложения (тянет ко второй строке)</span>
+      <span class="mchip"><b>Косслин:</b> текст в затемнённой зоне, вуаль слева</span>
+      <span class="mchip"><b>Иттен:</b> один тёплый акцент на тёмном</span>
+    </div></div>
+  </section>
+
+  <!-- 2 PAIN photo -->
+  <section class="slide photo">
+    <div class="bg"><img src="img/s02.png" alt=""></div>
+    <div class="veil left"></div>
+    <div class="content">
+      <div class="num">02 / 16</div>
+      <div class="kicker">Узнаёшь?</div>
+      <h2 class="head">Ты продаёшь <span class="hl">часы</span>. Кончились часы - кончились деньги</h2>
+      <div class="body">
+        <p>Берёшь больше клиентов - упираешься в сутки. Поднимаешь цену - часть уходит.</p>
+        <p><strong>Твой потолок дохода - это потолок твоего времени.</strong></p>
+        <p>Знания, на которые ты потратил годы, приносят ровно столько, сколько часов ты успел продать.</p>
+      </div>
+      <div class="foot">посчитай: сколько стоит ещё год по этой модели</div>
+    </div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Шварц:</b> problem-aware - называю боль, которую он уже чувствует</span>
+      <span class="mchip"><b>Рэкхэм:</b> Implication - читатель сам считает цену проблемы</span>
+      <span class="mchip"><b>Чалдини:</b> pre-suasion - согласие до просьбы</span>
+      <span class="mchip"><b>Ильяхов:</b> «потолок дохода = потолок времени» вместо «неэффективно»</span>
+      <span class="mchip"><b>Косслин:</b> вуаль под текстом, одна мысль</span>
+    </div></div>
+  </section>
+
+  <!-- 3 DATA cost of inaction -->
+  <section class="slide">
+    <div class="num">03 / 16</div>
+    <div class="split">
+      <div class="lcol">
+        <div class="kicker mute">Цена бездействия</div>
+        <h2 class="head">Каждый месяц на почасовке - это недозаработанный консалтинг</h2>
+        <div class="body">
+          <p><strong>Разрыв между «часами» и «системой» не стоит на месте.</strong> Он накапливается.</p>
+          <p>То, что за месяц кажется мелочью, за год превращается в сумму, на которую ты мог бы жить.</p>
+          <p>Это не расход. Это доход, который ты уже не получил.</p>
+        </div>
+      </div>
+      <div class="rcol">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="bars" style="height:330px">
+            <div class="bar"><div class="val">×1</div><div class="col" style="height:24px"></div><div class="cap">месяц</div></div>
+            <div class="bar"><div class="val">×3</div><div class="col" style="height:72px"></div><div class="cap">квартал</div></div>
+            <div class="bar am"><div class="val">×12</div><div class="col" style="height:288px"></div><div class="cap">за год</div></div>
+          </div>
+          <div class="baseline" style="width:360px"></div>
+          <div class="tag" style="margin-top:18px">упущенный доход нарастает кратно</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">пропорции иллюстративны · столбики от нуля, ×12 = ровно в 12 раз выше ×1</div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Рэкхэм:</b> Implication - стоимость проблемы крупным планом</span>
+      <span class="mchip"><b>Хормози:</b> цена бездействия как часть ценности</span>
+      <span class="mchip"><b>Кнафлик:</b> столбики строго от нуля, пропорция честная</span>
+      <span class="mchip"><b>Кнафлик:</b> всё серым → один акцент (год)</span>
+      <span class="mchip"><b>Шварц:</b> интенсификация - «расчесать» боль числом</span>
+    </div></div>
+  </section>
+
+  <!-- 4 BIG STATEMENT reframe -->
+  <section class="slide">
+    <div class="num">04 / 16</div>
+    <div class="kicker">Сдвиг рамки</div>
+    <div class="stage" style="flex-direction:column;gap:30px">
+      <div class="formula">Дело не в новых <span class="x">знаниях</span>.<br>В упаковке, оффере и системе продаж.</div>
+      <div class="sub" style="text-align:center;max-width:40ch">Ты ищешь ещё один курс по своей теме. А не хватает не темы - а того, что превращает тему в продукт, который покупают.</div>
+    </div>
+    <div class="foot">та самая проблема, которую обычно не замечают</div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Пинк:</b> поиск проблемы важнее решения - вскрыл не ту, что заявлена</span>
+      <span class="mchip"><b>Шварц:</b> переопределение - сдвигаю рамку с «знаний» на «систему»</span>
+      <span class="mchip"><b>Ривз:</b> зерно USP - чем мы отличаемся от «ещё одного курса»</span>
+      <span class="mchip"><b>Дуарте:</b> glance-тест - одна мысль, читается за 3 секунды</span>
+      <span class="mchip"><b>Иттен:</b> контраст по площади - акцентное слово доминирует</span>
+    </div></div>
+  </section>
+
+  <!-- 5 GRID 3 reasons -->
+  <section class="slide">
+    <div class="num">05 / 16</div>
+    <div class="kicker">Почему сильные не доходят</div>
+    <h2 class="head">Три причины, по которым эксперт остаётся без консалтинга</h2>
+    <div class="stage">
+      <div class="reasons">
+        <div class="rcard">
+          <div class="rn">Причина 1</div>
+          <div class="rt">Продаёт часы, а не результат</div>
+          <div class="rd">Берёт оплату за время. Клиент платит за процесс и торгуется за каждый час.</div>
+        </div>
+        <div class="rcard">
+          <div class="rn">Причина 2</div>
+          <div class="rt">Нет оффера - есть «услуги»</div>
+          <div class="rd">«Консультирую по...» вместо предложения, от которого трудно отказаться. Сравнивать не с чем, кроме цены.</div>
+        </div>
+        <div class="rcard">
+          <div class="rn">Причина 3</div>
+          <div class="rt">Нет системы продаж</div>
+          <div class="rd">Ждёт, пока купят сами. Созвон - это рассказ о себе, а не диагностика клиента.</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">три блока, не список из десяти - чтобы держалось в голове</div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Косслин:</b> ёмкость - дроблю на 3 чанка, а не список</span>
+      <span class="mchip"><b>Дуарте:</b> «делится на части» → Structure-сетка</span>
+      <span class="mchip"><b>Шварц:</b> механизация - называю причины как звенья одного механизма</span>
+      <span class="mchip"><b>Ильяхов:</b> каждая причина - факт поведения, не оценка</span>
+      <span class="mchip"><b>Кнафлик:</b> серая база, ровный вес ячеек</span>
+    </div></div>
+  </section>
+
+  <!-- 6 DIAGRAM method flow -->
+  <section class="slide">
+    <div class="num">06 / 16</div>
+    <div class="kicker">Механизм</div>
+    <h2 class="head">Система из трёх шагов</h2>
+    <div class="sub" style="max-width:46ch">Каждый шаг закрывает одну из трёх причин со слайда 5. Дальше разбираем по отдельности.</div>
+    <div class="stage">
+      <div class="flow">
+        <div class="fstep am">
+          <div class="fdisc">1</div>
+          <div class="ft">Упакуй</div>
+          <div class="fd">Экспертизу - в оффер по 4 рычагам ценности</div>
+        </div>
+        <div class="farrow">→</div>
+        <div class="fstep am">
+          <div class="fdisc">2</div>
+          <div class="ft">Спозиционируй</div>
+          <div class="fd">В узкую нишу, где тебя нельзя сравнить по цене</div>
+        </div>
+        <div class="farrow">→</div>
+        <div class="fstep am">
+          <div class="fdisc">3</div>
+          <div class="ft">Продай</div>
+          <div class="fd">На созвоне-диагностике, без впаривания</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">дальше - каждый шаг по отдельности</div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Шварц:</b> механизация - показываю КАК, решение выглядит неизбежным</span>
+      <span class="mchip"><b>Дуарте:</b> отношение «поток» → Flow-диаграмма, движение слева направо</span>
+      <span class="mchip"><b>Ривз:</b> долбёжка одной идеи - три шага вокруг одного обещания</span>
+      <span class="mchip"><b>Косслин:</b> совместимость - время идёт слева направо</span>
+      <span class="mchip"><b>Иттен:</b> акцентные диски ведут взгляд по шагам</span>
+    </div></div>
+  </section>
+
+  <!-- 7 FRACTION value equation -->
+  <section class="slide">
+    <div class="num">07 / 16</div>
+    <div class="kicker">Шаг 1 · Упаковка</div>
+    <h2 class="head">Оффер - это не список услуг. Это дробь, которую можно крутить</h2>
+    <div class="stage" style="margin:0">
+      <div class="fraction">
+        <div class="frow">
+          <div class="fcell up">Результат клиента<span class="ar">↑ растим</span></div>
+          <div class="ftimes">×</div>
+          <div class="fcell up">Вероятность<span class="ar">↑ растим</span></div>
+        </div>
+        <div class="fbar"></div>
+        <div class="frow">
+          <div class="fcell dn">Время до результата<span class="ar">↓ к нулю</span></div>
+          <div class="ftimes">×</div>
+          <div class="fcell dn">Усилия клиента<span class="ar">↓ к нулю</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="body" style="margin-top:0"><p><strong>Не «8 модулей», а 4 рычага.</strong> Не «консультация», а запущенный проект клиента к сроку, по шагам, с проверкой. Верх растишь, низ давишь к нулю - ценность взлетает, продукт не трогаешь.</p></div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Хормози:</b> уравнение ценности - 4 драйвера в виде дроби</span>
+      <span class="mchip"><b>Ильяхов:</b> «результат клиента» вместо «эффективная услуга»</span>
+      <span class="mchip"><b>Дуарте:</b> отношение «делится» → дробь-структура</span>
+      <span class="mchip"><b>Шварц:</b> механизация ценности - видимый рычаг</span>
+      <span class="mchip"><b>Иттен:</b> акцентная черта дроби - смысловой центр</span>
+    </div></div>
+  </section>
+
+  <!-- 8 COMPARE positioning -->
+  <section class="slide">
+    <div class="num">08 / 16</div>
+    <div class="kicker">Шаг 2 · Позиционирование</div>
+    <h2 class="head">Узкая ниша бьёт «специалиста широкого профиля»</h2>
+    <div class="stage">
+      <div class="cmp">
+        <div class="ccard">
+          <div class="lab">Широкий профиль</div>
+          <div class="big">«Бизнес-коуч. Помогаю расти.»</div>
+          <div class="small">Тебя сравнивают со всеми такими же. Единственный аргумент в споре - цена.</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="ccard am">
+          <div class="lab">Узкая ниша · USP</div>
+          <div class="big">«Ставлю отдел продаж владельцам студий до 10 человек - за 30 дней, по своему регламенту»</div>
+          <div class="small">Узкий кто, измеримый результат, свой механизм. По цене сравнивать не с чем - сравнивают по результату.</div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">пример ниши иллюстративный · принцип - сузить до неповторимого</div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Ривз:</b> USP - предложение, которое конкурент не может повторить</span>
+      <span class="mchip"><b>Шварц:</b> идентификация - попасть в самоопределение клиента</span>
+      <span class="mchip"><b>Кнафлик:</b> серое (общее) vs акцент (твоя ниша)</span>
+      <span class="mchip"><b>Ильяхов:</b> «владельцам студий до 10 человек» вместо «для бизнеса»</span>
+      <span class="mchip"><b>Иттен:</b> светло-тёмный контраст между картами</span>
+    </div></div>
+  </section>
+
+  <!-- 9 SALES photo -->
+  <section class="slide photo">
+    <div class="bg"><img src="img/s09.png" alt=""></div>
+    <div class="veil left"></div>
+    <div class="content">
+      <div class="num">09 / 16</div>
+      <div class="kicker">Шаг 3 · Продажа</div>
+      <h2 class="head">Продажа - это <span class="hl">диагностика</span>, а не уговоры</h2>
+      <div class="body">
+        <p>Ты не презентуешь. Ты задаёшь вопросы, на которых клиент сам называет цену своей проблемы вслух.</p>
+        <p>Когда он её назвал, твоя цена выглядит мелочью рядом с тем, что он теряет без решения.</p>
+        <p><strong>«Дорого» - нормальная реакция. Понимаю.</strong> Это не стоп, а место, где разговор продолжается.</p>
+      </div>
+      <div class="foot">консультативная продажа · возражение снимается заранее, в самом разговоре</div>
+    </div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Рэкхэм:</b> SPIN + Implication - клиент сам считает цену проблемы</span>
+      <span class="mchip"><b>Блаунт:</b> «Карниз» - принять эмоцию («понимаю, это нормально»), затем turnaround</span>
+      <span class="mchip"><b>Пинк:</b> аттюнмент - сначала вопросы, потом предложение</span>
+      <span class="mchip"><b>Шварц:</b> переопределение возражения внутри текста</span>
+      <span class="mchip"><b>Косслин:</b> текст над затемнённой зоной фото</span>
+    </div></div>
+  </section>
+
+  <!-- 10 PROOF data + photo -->
+  <section class="slide photo">
+    <div class="bg"><img src="img/s10.png" alt=""></div>
+    <div class="veil left"></div>
+    <div class="veil" style="background:linear-gradient(270deg, rgba(5,7,10,.72) 0%, rgba(5,7,10,.2) 42%, transparent 60%)"></div>
+    <div class="content">
+      <div class="num">10 / 16</div>
+      <div class="kicker mute">Доказательство под обещание</div>
+      <h2 class="head">На смелое обещание - доказательство соразмерной силы</h2>
+      <div class="stage" style="justify-content:flex-start;gap:54px">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="bars" style="height:250px">
+            <div class="bar"><div class="val">1</div><div class="col" style="height:80px"></div><div class="cap">месяц<br>на часах</div></div>
+            <div class="bar am"><div class="val">3</div><div class="col" style="height:240px"></div><div class="cap">один<br>контракт</div></div>
+          </div>
+          <div class="baseline" style="width:226px"></div>
+        </div>
+        <div class="hero-num neutral">×3<small>иллюстрация механики, не реальный кейс</small></div>
+      </div>
+      <div class="foot">цифры иллюстративны · в боевом деке здесь конкретный кейс: имя, число, скрин</div>
+    </div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Бенсивенга:</b> тест «Yeah, Sure» - под обещание пруф соразмерной силы (тут иллюстративно, в бою - кейс)</span>
+      <span class="mchip"><b>Кнафлик:</b> столбики от нуля, ×3 = ровно втрое выше</span>
+      <span class="mchip"><b>Огилви:</b> один сильнейший факт вместо прилагательных (в бою - реальный)</span>
+      <span class="mchip"><b>Ильяхов:</b> рядом с цифрой ни одного лишнего слова</span>
+      <span class="mchip"><b>Косслин:</b> данные в затемнённой зоне поверх фото</span>
+    </div></div>
+  </section>
+
+  <!-- 11 TRANSFORMATION photo + compare -->
+  <section class="slide photo">
+    <div class="bg"><img src="img/s11.png" alt=""></div>
+    <div class="veil left"></div>
+    <div class="content">
+      <div class="num">11 / 16</div>
+      <div class="kicker">Трансформация</div>
+      <h2 class="head">Кем ты был. Кем станешь</h2>
+      <div class="stage" style="justify-content:flex-start">
+        <div class="cmp" style="max-width:840px">
+          <div class="ccard float">
+            <div class="lab">Сейчас</div>
+            <div class="big">Специалист, продающий часы</div>
+            <div class="small">Доход упёрся в часы в сутках. Один из многих. Клиенты торгуются за цену.</div>
+          </div>
+          <div class="arrow">→</div>
+          <div class="ccard am float">
+            <div class="lab">Через 8 недель</div>
+            <div class="big">Консультант с продуктом и потоком заявок</div>
+            <div class="small">Продаёшь результат. Доход не привязан к часам. В нише знают тебя.</div>
+          </div>
+        </div>
+      </div>
+      <div class="foot">срок и результат - иллюстративный пример</div>
+    </div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Хормози:</b> мечта-результат - продаю состояние «после», а не модули</span>
+      <span class="mchip"><b>Шварц:</b> до/после - наглядный разрыв между состояниями</span>
+      <span class="mchip"><b>Пинк:</b> рамка «потенциал» - кем человек может стать</span>
+      <span class="mchip"><b>Кнафлик:</b> серое «сейчас» vs акцентное «после»</span>
+      <span class="mchip"><b>Косслин:</b> карты на затемнённом фоне фото</span>
+    </div></div>
+  </section>
+
+  <!-- 12 WHO / WHO NOT -->
+  <section class="slide">
+    <div class="num">12 / 16</div>
+    <div class="kicker">Честно: для своих</div>
+    <h2 class="head">Кому подойдёт. И кому честно нет</h2>
+    <div class="stage">
+      <div class="qual">
+        <div class="qcol yes">
+          <h4>Подойдёт, если</h4>
+          <div class="qrow"><span class="qmark">+</span><span>уже есть экспертиза и первые клиенты</span></div>
+          <div class="qrow"><span class="qmark">+</span><span>готов 8 недель работать руками, а не смотреть лекции</span></div>
+          <div class="qrow"><span class="qmark">+</span><span>хочешь продавать результат, а не своё время</span></div>
+        </div>
+        <div class="qcol no">
+          <h4>Не подойдёт, если</h4>
+          <div class="qrow"><span class="qmark">−</span><span>ещё нет практики и реальных клиентов</span></div>
+          <div class="qrow"><span class="qmark">−</span><span>ищешь пассивный доход без своего участия</span></div>
+          <div class="qrow"><span class="qmark">−</span><span>ждёшь результат без 8 недель работы руками</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">называю, кому НЕ подойдёт - это честнее и экономит время обоим</div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Шварц:</b> «смертельная искренность» - прямо говорю, кому НЕ подойдёт</span>
+      <span class="mchip"><b>Чалдини:</b> единство - «для своих», квалификация</span>
+      <span class="mchip"><b>Пинк:</b> рамка «с изъяном» - честное «нет» повышает доверие</span>
+      <span class="mchip"><b>Косслин:</b> два чётких столбца, симметрия</span>
+      <span class="mchip"><b>Иттен:</b> акцент только на «подойдёт»</span>
+    </div></div>
+  </section>
+
+  <!-- 13 STACK -->
+  <section class="slide">
+    <div class="num">13 / 16</div>
+    <div class="kicker">Что внутри</div>
+    <h2 class="head" style="font-size:32px;max-width:28ch;margin-top:10px">Система плюс всё, чтобы она заработала с первой недели</h2>
+    <div class="stage" style="margin:0">
+      <div class="tower">
+        <div class="tname">«Эксперт → Консультант за 8 недель»</div>
+        <div class="layer core"><span>Ядро: система упаковки, позиционирования и продаж по шагам</span><span class="pt">60&nbsp;000</span></div>
+        <div class="layer"><span>Бонус: личный разбор твоего оффера по 4 рычагам</span><span class="pt">30&nbsp;000</span></div>
+        <div class="layer"><span>Бонус: скрипты созвонов и обработки возражений</span><span class="pt">18&nbsp;000</span></div>
+        <div class="layer"><span>Бонус: банк ниш и 50 заголовков под позиционирование</span><span class="pt">12&nbsp;000</span></div>
+        <div class="layer"><span>Бонус: шаблоны гарантий и сборки стека оффера</span><span class="pt">9&nbsp;000</span></div>
+        <div class="totval"><span>Итоговая ценность</span><span class="v">129&nbsp;000</span></div>
+        <div class="price"><span>Цена места в потоке</span><span><span class="real">39&nbsp;000</span><span class="save">-70%</span></span></div>
+      </div>
+    </div>
+    <div class="foot">цифры иллюстративны · ценность много выше цены места</div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Хормози:</b> Grand Slam - ядро + бонусы, у каждого ценник, ценность ≫ цены</span>
+      <span class="mchip"><b>Хормози:</b> нейминг по MAGIC (аватар + цель + срок)</span>
+      <span class="mchip"><b>Шварц:</b> «каталог выгод» - кульминация перечислением</span>
+      <span class="mchip"><b>Дуарте:</b> отношение «складывается» → Stack-башня</span>
+      <span class="mchip"><b>Кнафлик:</b> акцент только на итоговой ценности и цене</span>
+    </div></div>
+  </section>
+
+  <!-- 14 GUARANTEE big-statement -->
+  <section class="slide">
+    <div class="num">14 / 16</div>
+    <div class="kicker">Гарантия · риск беру на себя</div>
+    <div class="stage" style="flex-direction:column;gap:28px">
+      <div class="formula">Не запустил консалтинг по системе за 8 недель -<br>возвращаю <span class="x">деньги</span> и доводим лично</div>
+      <div class="sub" style="text-align:center;max-width:38ch">Условие одно: прошёл шаги и сделал задания. Гарантия привязана к действию - работает для тех, кто делает, а не для случайных.</div>
+    </div>
+    <div class="foot">срок и формат иллюстративны · обратимое решение снимает страх входа</div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Хормози:</b> реверс риска «Если не [результат] за [срок], то [возврат]»</span>
+      <span class="mchip"><b>Бенсивенга:</b> обещание в форме IF-THEN</span>
+      <span class="mchip"><b>Бергер:</b> снять неопределённость - решение обратимо</span>
+      <span class="mchip"><b>Шварц:</b> искренность - гарантия привязана к действию, не «всем подряд»</span>
+      <span class="mchip"><b>Иттен:</b> контраст по площади - формула доминирует на тёмном</span>
+    </div></div>
+  </section>
+
+  <!-- 15 SCARCITY big-statement -->
+  <section class="slide">
+    <div class="num">15 / 16</div>
+    <div class="kicker">Дефицит · честный</div>
+    <div class="stage" style="flex-direction:column;gap:26px">
+      <div class="formula">В потоке - <span class="x">12 мест</span>. Каждый оффер разбираю лично</div>
+      <div class="sub" style="text-align:center;max-width:42ch">Тринадцатое место не открываю - не успею разобрать всех руками. Это не счётчик на лендинге, а реальный предел внимания. Набрался поток - набор закрыт до следующего.</div>
+    </div>
+    <div class="foot">лимит иллюстративен · ограничение настоящее, без фейк-таймеров</div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Хормози:</b> честный дефицит - реальный лимит, без фейк-счётчиков</span>
+      <span class="mchip"><b>Чалдини:</b> дефицит + причина лимита (личный разбор)</span>
+      <span class="mchip"><b>Бергер:</b> снижаю порог - объясняю, почему предел настоящий</span>
+      <span class="mchip"><b>Ильяхов:</b> «не успею разобрать руками» вместо «осталось мало мест»</span>
+      <span class="mchip"><b>Иттен:</b> акцент на числе «12»</span>
+    </div></div>
+  </section>
+
+  <!-- 16 CTA photo -->
+  <section class="slide photo">
+    <div class="bg"><img src="img/s16.png" alt=""></div>
+    <div class="veil full"></div>
+    <div class="content" style="align-items:center;justify-content:center">
+      <div class="num">16 / 16</div>
+      <div class="ctawrap">
+        <div class="kicker">Один шаг</div>
+        <div class="ctapromise">За 30 минут разбора увидишь свой оффер и первый шаг к запуску</div>
+        <button class="btn">Записаться на разбор</button>
+        <div class="limiter">Разбор - вход в поток и бесплатный · <b>12 мест</b> · набор до закрытия текущего</div>
+      </div>
+    </div>
+    <div class="foot">один шаг, ноль конкурирующих ссылок · лимит иллюстративен</div>
+    <div class="methods"><h5>Методы на слайде</h5><div class="mlist">
+      <span class="mchip"><b>Блаунт:</b> изоляция - единственный CTA, без меню опций</span>
+      <span class="mchip"><b>Пинк:</b> рамка «Меньше» - один вариант действия</span>
+      <span class="mchip"><b>Иттен:</b> малый насыщенный акцент (кнопка) доминирует по площади</span>
+      <span class="mchip"><b>Хормози:</b> дефицит как причина действовать сейчас</span>
+      <span class="mchip"><b>Кейплз:</b> формулировку CTA тестировать по отклику, не угадывать</span>
+    </div></div>
+  </section>
+
+  <!-- 17 METHOD MAP -->
+  <section class="slide">
+    <div class="num">карта</div>
+    <div class="kicker">Карта мастерства</div>
+    <h2 class="head" style="font-size:34px">Слайд → какой метод применён</h2>
+    <div class="stage" style="margin:6px 0">
+      <div class="mapgrid">
+        <div class="maprow"><span class="mn">01</span><span class="mm"><b>Кейплз</b> заголовок-выгода+срок · <b>Огилви</b> 80% · <b>Шугарман</b> первое предложение · <b>Косслин</b> текст в вуали</span></div>
+        <div class="maprow"><span class="mn">02</span><span class="mm"><b>Шварц</b> problem-aware · <b>Рэкхэм</b> Implication · <b>Чалдини</b> pre-suasion · <b>Ильяхов</b> факт вместо оценки</span></div>
+        <div class="maprow"><span class="mn">03</span><span class="mm"><b>Рэкхэм</b> цена проблемы · <b>Хормози</b> цена бездействия · <b>Кнафлик</b> столбики от нуля + один акцент</span></div>
+        <div class="maprow"><span class="mn">04</span><span class="mm"><b>Пинк</b> поиск проблемы · <b>Шварц</b> переопределение · <b>Ривз</b> зерно USP · <b>Дуарте</b> glance</span></div>
+        <div class="maprow"><span class="mn">05</span><span class="mm"><b>Косслин</b> ёмкость (3 чанка) · <b>Дуарте</b> Structure-сетка · <b>Шварц</b> механизация · <b>Ильяхов</b> факты</span></div>
+        <div class="maprow"><span class="mn">06</span><span class="mm"><b>Шварц</b> механизация (КАК) · <b>Дуарте</b> Flow · <b>Ривз</b> долбёжка идеи · <b>Косслин</b> время слева-направо</span></div>
+        <div class="maprow"><span class="mn">07</span><span class="mm"><b>Хормози</b> уравнение ценности · <b>Дуарте</b> дробь · <b>Ильяхов</b> результат вместо оценки</span></div>
+        <div class="maprow"><span class="mn">08</span><span class="mm"><b>Ривз</b> USP · <b>Шварц</b> идентификация · <b>Кнафлик</b> серое vs акцент · <b>Иттен</b> контраст</span></div>
+        <div class="maprow"><span class="mn">09</span><span class="mm"><b>Рэкхэм</b> SPIN/Implication · <b>Блаунт</b> Карниз+turnaround · <b>Пинк</b> аттюнмент · <b>Косслин</b> вуаль</span></div>
+        <div class="maprow"><span class="mn">10</span><span class="mm"><b>Бенсивенга</b> Yeah-Sure · <b>Кнафлик</b> число-герой от нуля · <b>Огилви</b> факт · <b>Ильяхов</b> чистота</span></div>
+        <div class="maprow"><span class="mn">11</span><span class="mm"><b>Хормози</b> мечта-результат · <b>Шварц</b> до/после · <b>Пинк</b> потенциал · <b>Кнафлик</b> серое vs акцент</span></div>
+        <div class="maprow"><span class="mn">12</span><span class="mm"><b>Шварц</b> смертельная искренность · <b>Чалдини</b> единство · <b>Пинк</b> рамка с изъяном</span></div>
+        <div class="maprow"><span class="mn">13</span><span class="mm"><b>Хормози</b> Grand Slam + MAGIC · <b>Шварц</b> каталог выгод · <b>Дуарте</b> Stack · <b>Кнафлик</b> акцент</span></div>
+        <div class="maprow"><span class="mn">14</span><span class="mm"><b>Хормози</b> реверс риска · <b>Бенсивенга</b> IF-THEN · <b>Бергер</b> снять неопределённость · <b>Шварц</b> искренность</span></div>
+        <div class="maprow"><span class="mn">15</span><span class="mm"><b>Хормози</b> честный дефицит · <b>Чалдини</b> дефицит+причина · <b>Бергер</b> порог · <b>Ильяхов</b> факт</span></div>
+        <div class="maprow"><span class="mn">16</span><span class="mm"><b>Блаунт</b> изоляция CTA · <b>Пинк</b> «меньше» · <b>Иттен</b> акцент по площади · <b>Кейплз</b> тест CTA</span></div>
+      </div>
+    </div>
+    <div class="foot">сквозной USP (Ривз): не знания, а система, которая их продаёт · один акцент весь дек (Иттен/design-system)</div>
+  </section>
+
+</div>
+
+<div class="hud"><div class="dots" id="dots"></div></div>
+
+<script>
+const deck=document.getElementById('deck');
+const slides=[...deck.querySelectorAll('.slide')];
+const dots=document.getElementById('dots');
+let i=0;
+slides.forEach((_,k)=>{const b=document.createElement('b');b.onclick=()=>go(k);dots.appendChild(b)});
+function paint(){[...dots.children].forEach((d,k)=>d.classList.toggle('on',k===i))}
+function go(k){i=Math.max(0,Math.min(slides.length-1,k));deck.scrollTo({left:i*1280,behavior:'smooth'});paint()}
+paint();
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(i+1)}
+  else if(e.key==='ArrowLeft'){e.preventDefault();go(i-1)}
+  else if(e.key.toLowerCase()==='m'||e.key==='ь'){document.body.classList.toggle('show-methods')}
+});
+deck.addEventListener('scroll',()=>{const k=Math.round(deck.scrollLeft/1280);if(k!==i){i=k;paint()}},{passive:true});
+</script>
+</body>
+</html>
